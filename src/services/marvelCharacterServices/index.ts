@@ -19,12 +19,6 @@ export class CharacterService {
     return this.getData(`/characters`);
   }
 
-  async fetchMoreCharacterData(hero: string, offset: number) {
-    return this.getData(`/characters?nameStartsWith=${hero}`, {
-      params: { offset },
-    });
-  }
-
   async getData(endpoint: string, config = {}) {
     try {
       const response = await API.get(endpoint, config);

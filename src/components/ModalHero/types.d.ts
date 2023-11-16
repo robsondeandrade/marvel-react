@@ -3,7 +3,6 @@ export interface IParamsComponent {
   onClose: () => void;
 }
 
-export interface IIsOpen{
+export interface IIsOpen {
   isOpen: boolean;
-
 }

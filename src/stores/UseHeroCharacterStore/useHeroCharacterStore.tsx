@@ -63,40 +63,28 @@ export const useHeroCharacterStore = create<TCharacterStore>((set) => ({
     }
   },
 
-  getCharactersWithOffset: async (offset: number) => {
-    if (useHeroCharacterStore.getState().isFetchingCharactersWithOffset) {
-      return;
-    }
-
-    set({ loading: true, error: false, isFetchingCharactersWithOffset: true });
-
-    try {
-      const response = await characterService.getCharactersWithOffset(offset);
-
-      set((state) => ({
-        characters: [...state.characters, ...response.data.results],
-      }));
-      return response;
-    } catch (error) {
-      set({ error: true });
-    } finally {
-      set({
-        loading: false,
-        isFetchingCharactersWithOffset: false,
-      });
-    }
-  },
-
-  getAllCharacters: async () => {
+  getAllCharacters: async (offset) => {
     if (useHeroCharacterStore.getState().isFetchingAllCharacters) {
       return;
     }
 
-    set({ loading: true, error: false, isFetchingAllCharacters: true });
+    set({
+      loading: true,
+      error: false,
+      isFetchingAllCharacters: true,
+    });
 
     try {
-      const response = await characterService.getAllCharacters();
-      set({ characters: response.data.results });
+      const response = offset
+        ? await characterService.getCharactersWithOffset(offset)
+        : await characterService.getAllCharacters();
+
+      set((state) => ({
+        characters: offset
+          ? [...state.characters, ...response.data.results]
+          : response.data.results,
+      }));
+
       return response;
     } catch (error) {
       set({ error: true });
@@ -104,30 +92,6 @@ export const useHeroCharacterStore = create<TCharacterStore>((set) => ({
       set({
         loading: false,
         isFetchingAllCharacters: false,
-      });
-    }
-  },
-
-  fetchMoreCharacterData: async (hero: string, offset: number) => {
-    if (useHeroCharacterStore.getState().isFetchingMoreCharacter) {
-      return;
-    }
-
-    set({ loading: true, error: false, isFetchingMoreCharacter: true });
-
-    try {
-      const response = await characterService.fetchMoreCharacterData(
-        hero,
-        offset
-      );
-      set({ characters: response.data.results });
-      return response;
-    } catch (error) {
-      set({ error: true });
-    } finally {
-      set({
-        loading: false,
-        isFetchingMoreCharacter: false,
       });
     }
   },

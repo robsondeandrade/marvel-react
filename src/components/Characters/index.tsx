@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { CardCharacters } from "../CardCharacters";
 import ModalHero from "../ModalHero";
 import { useHeroCharacterStore } from "@/stores/UseHeroCharacterStore/useHeroCharacterStore";
@@ -12,38 +12,39 @@ export const Characters = () => {
   const [openModals, setOpenModals] = useState<{ [key: number]: boolean }>({});
   const searchParams = new URLSearchParams(location.search);
   const name = searchParams.get("name");
+  const navigate = useNavigate();
 
   const {
     loading,
     characters,
     getAllCharacters,
-    fetchMoreCharacterData,
     getCharactersByName,
-    getCharactersWithOffset,
     getCharactersByNameStartsWith,
   } = useHeroCharacterStore();
 
   useEffect(() => {
-    if (name) {
-      getCharactersByNameStartsWith(`${name}`);
-    } else {
-      getAllCharacters();
-    }
-  }, [name]);
+    const fetchData = async () => {
+      try {
+        await (name ? getCharactersByNameStartsWith(name) : getAllCharacters());
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, [name, getCharactersByNameStartsWith, getAllCharacters]);
 
   const handleMoreCharacter = useCallback(async () => {
-    const offset = characters.length;
-
     try {
       if (name) {
-        await fetchMoreCharacterData(name, offset);
+        navigate(`/personagens`);
       } else {
-        await getCharactersWithOffset(offset);
+        await getAllCharacters(characters.length);
       }
     } catch (err) {
       console.error(err);
     }
-  }, [characters, name]);
+  }, [characters.length, getAllCharacters, name]);
 
   const openModal = async (character: IMarvelCharacter) => {
     await getCharactersByName(character.name);
@@ -82,7 +83,7 @@ export const Characters = () => {
           )}
         </S.Ul>
 
-        <S.Button onClick={handleMoreCharacter}>Mais</S.Button>
+        <S.Button onClick={handleMoreCharacter}>{name ? "Voltar" : "Mais"}</S.Button>
       </S.Container>
     </>
   );

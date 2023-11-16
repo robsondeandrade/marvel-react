@@ -12,13 +12,11 @@ export type TCharacterStore = {
   error: boolean;
   isFetchingCharactersByNameStartsWith: boolean;
   isFetchingCharactersByName: boolean;
-  isFetchingCharactersWithOffset: boolean; // Correção aqui
+  isFetchingCharactersWithOffset: boolean;
   isFetchingAllCharacters: boolean;
   isFetchingMoreCharacter: boolean;
 
   getCharactersByNameStartsWith: (nameStartsWith: string) => Promise<void>;
   getCharactersByName: (name: string) => Promise<void>;
-  getCharactersWithOffset: (offset: number) => Promise<void>;
-  getAllCharacters: () => Promise<void>;
-  fetchMoreCharacterData: (hero: string, offset: number) => Promise<void>;
+  getAllCharacters: (offset?: number) => Promise<void>;
 };
