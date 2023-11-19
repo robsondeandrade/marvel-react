@@ -1,22 +1,24 @@
-import { IMarvelCharacter } from "@/services/marvelCharacterServices/types";
+import { IData } from "@/services/marvelCharacterServices/types";
 
 export type HeroCharacter = {
   id: number;
   name: string;
 };
-
 export type TCharacterStore = {
-  characters: IMarvelCharacter[];
+  characters: IData | null;
   selectCharacter: IMarvelCharacter[];
   loading: boolean;
   error: boolean;
-  isFetchingCharactersByNameStartsWith: boolean;
-  isFetchingCharactersByName: boolean;
-  isFetchingCharactersWithOffset: boolean;
-  isFetchingAllCharacters: boolean;
-  isFetchingMoreCharacter: boolean;
+  currentPage: number;
+  itemsPerPage: number;
 
-  getCharactersByNameStartsWith: (nameStartsWith: string) => Promise<void>;
+  getCharactersByNameStartsWith: (
+    nameStartsWith: string,
+    offset: number,
+    itemsPerPage: number
+  ) => Promise<void>;
   getCharactersByName: (name: string) => Promise<void>;
-  getAllCharacters: (offset?: number) => Promise<void>;
+  getAllCharacters: (offset: number, itemsPerPage: number) => Promise<void>;
+  setCurrentPage: (page: number) => void;
+  setItemsPerPage: (value: number) => void;
 };

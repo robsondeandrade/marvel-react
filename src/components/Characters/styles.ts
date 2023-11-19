@@ -17,23 +17,9 @@ export const Ul = styled.ul`
   justify-content: center;
   flex-wrap: wrap;
   gap: 3.5rem;
+  margin-bottom: 2rem;
 `;
 
 export const H1 = styled.h1`
   color: ${({ theme }) => theme.colors.light[200]};
-`;
-
-export const Button = styled.button`
-  width: 20rem;
-  height: 5rem;
-  margin: 2rem;
-  background-color: ${({ theme }) => theme.colors.red[500]};
-  transition: transform 0.3s;
-
-  &:focus {
-    outline: none;
-  }
-  &:hover {
-    transform: scale(1.05);
-  }
 `;

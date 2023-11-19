@@ -1,22 +1,31 @@
 import API from "@/config/axios";
 
 export class CharacterService {
-  async getCharactersByNameStartsWith(nameStartsWith: string) {
-    return this.getData(`/characters?nameStartsWith=${nameStartsWith}`);
+  async getCharactersByNameStartsWith(
+    nameStartsWith: string,
+    offset = 0,
+    limit = 10
+  ) {
+    const params = {
+      offset,
+      limit,
+    };
+    return this.getData(`/characters?nameStartsWith=${nameStartsWith}`, {
+      params,
+    });
   }
 
   async getCharactersByName(name: string) {
     return this.getData(`/characters?name=${name}`);
   }
 
-  async getCharactersWithOffset(offset: number) {
-    return this.getData(`/characters`, {
-      params: { offset },
-    });
-  }
+  async getAllCharacters(offset = 0, limit = 10) {
+    const params = {
+      offset,
+      limit,
+    };
 
-  async getAllCharacters() {
-    return this.getData(`/characters`);
+    return this.getData(`/characters`, { params });
   }
 
   async getData(endpoint: string, config = {}) {

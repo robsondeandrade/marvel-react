@@ -1,70 +1,75 @@
 import { useCallback, useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { CardCharacters } from "../CardCharacters";
 import ModalHero from "../ModalHero";
 import { useHeroCharacterStore } from "@/stores/UseHeroCharacterStore/useHeroCharacterStore";
 import { IMarvelCharacter } from "@/services/marvelCharacterServices/types";
 import { LoadingOverlay } from "../Loading/LoadingOverlay";
+import { CustomPagination } from "../pagination";
+import { calculateTotalPages } from "@/utils/pagination";
 import * as S from "./styles";
 
 export const Characters = () => {
   const location = useLocation();
   const [openModals, setOpenModals] = useState<{ [key: number]: boolean }>({});
   const searchParams = new URLSearchParams(location.search);
-  const name = searchParams.get("name");
-  const navigate = useNavigate();
+  const searchedName = searchParams.get("name");
 
   const {
     loading,
     characters,
+    currentPage,
+    itemsPerPage,
+    setCurrentPage,
+    setItemsPerPage,
     getAllCharacters,
     getCharactersByName,
     getCharactersByNameStartsWith,
   } = useHeroCharacterStore();
 
+  const totalPages = calculateTotalPages(characters?.total, characters?.limit);
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await (name ? getCharactersByNameStartsWith(name) : getAllCharacters());
-      } catch (error) {
-        console.error(error);
-      }
-    };
+    fetchCharacters();
+  }, [currentPage, itemsPerPage, searchedName]);
 
-    fetchData();
-  }, [name, getCharactersByNameStartsWith, getAllCharacters]);
-
-  const handleMoreCharacter = useCallback(async () => {
+  const fetchCharacters = useCallback(async () => {
     try {
-      if (name) {
-        navigate(`/personagens`);
-      } else {
-        await getAllCharacters(characters.length);
-      }
-    } catch (err) {
-      console.error(err);
+      const offset = (currentPage - 1) * itemsPerPage;
+
+      await (searchedName
+        ? getCharactersByNameStartsWith(searchedName, offset, itemsPerPage)
+        : getAllCharacters(offset, itemsPerPage));
+    } catch (error) {
+      console.error(error);
     }
-  }, [characters.length, getAllCharacters, name]);
+  }, [currentPage, itemsPerPage, getAllCharacters, searchedName]);
 
   const openModal = async (character: IMarvelCharacter) => {
     await getCharactersByName(character.name);
-    setOpenModals({ ...openModals, [character.id]: true });
+    setOpenModals((prev) => ({ ...prev, [character.id]: true }));
   };
 
   const closeModal = (characterId: number) => {
-    setOpenModals({ ...openModals, [characterId]: false });
+    setOpenModals((prev) => ({ ...prev, [characterId]: false }));
   };
 
-  if (!characters.length && loading) {
-    return <LoadingOverlay />;
-  }
+  const handleSelectPerPage = (value: number) => {
+    setItemsPerPage(value);
+    setCurrentPage(1);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   return (
     <>
+      {loading && <LoadingOverlay />}
       <S.Container>
         <S.Ul>
-          {characters?.length >= 1 ? (
-            characters.map((character) => (
+          {characters && characters.results?.length >= 1 ? (
+            characters.results.map((character) => (
               <div key={character.id}>
                 <CardCharacters
                   character={character}
@@ -83,7 +88,15 @@ export const Characters = () => {
           )}
         </S.Ul>
 
-        <S.Button onClick={handleMoreCharacter}>{name ? "Voltar" : "Mais"}</S.Button>
+        {characters && characters.results?.length && (
+          <CustomPagination
+            currentPage={currentPage}
+            selected={itemsPerPage}
+            handlePageChange={handlePageChange}
+            handleSelectPerPage={handleSelectPerPage}
+            totalPages={totalPages}
+          />
+        )}
       </S.Container>
     </>
   );

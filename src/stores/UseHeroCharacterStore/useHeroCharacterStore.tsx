@@ -7,92 +7,76 @@ const characterService = new CharacterService();
 export const useHeroCharacterStore = create<TCharacterStore>((set) => ({
   error: false,
   loading: false,
-  characters: [],
+  characters: null,
   selectCharacter: [],
-  isFetchingMoreCharacter: false,
-  isFetchingAllCharacters: false,
-  isFetchingCharactersByName: false,
-  isFetchingCharactersWithOffset: false,
-  isFetchingCharactersByNameStartsWith: false,
+  currentPage: 1,
+  itemsPerPage: 20,
 
-  getCharactersByNameStartsWith: async (nameStartsWith: string) => {
-    if (useHeroCharacterStore.getState().isFetchingCharactersByNameStartsWith) {
+  getCharactersByNameStartsWith: async (
+    nameStartsWith,
+    offset,
+    itemsPerPage
+  ) => {
+    if (useHeroCharacterStore.getState().loading) {
       return;
     }
 
-    set({
-      loading: true,
-      error: false,
-      isFetchingCharactersByNameStartsWith: true,
-    });
+    set({ loading: true, error: false });
 
     try {
       const response = await characterService.getCharactersByNameStartsWith(
-        nameStartsWith
+        nameStartsWith,
+        offset,
+        itemsPerPage
       );
-      set({ characters: response.data.results });
+      set({ characters: response.data, loading: false });
       return response;
     } catch (error) {
-      set({ error: true });
-    } finally {
-      set({
-        loading: false,
-        isFetchingCharactersByNameStartsWith: false,
-      });
+      set({ error: true, loading: false });
     }
   },
 
   getCharactersByName: async (name: string) => {
-    if (useHeroCharacterStore.getState().isFetchingCharactersByName) {
+    if (useHeroCharacterStore.getState().loading) {
       return;
     }
 
-    set({ loading: true, error: false, isFetchingCharactersByName: true });
+    set({ loading: true, error: false });
 
     try {
       const response = await characterService.getCharactersByName(name);
-      set({ selectCharacter: response.data.results });
+      set({ selectCharacter: response.data.results, loading: false });
+
       return response;
     } catch (error) {
-      set({ error: true });
-    } finally {
-      set({
-        loading: false,
-        isFetchingCharactersByName: false,
-      });
+      set({ error: true, loading: false });
     }
   },
 
-  getAllCharacters: async (offset) => {
-    if (useHeroCharacterStore.getState().isFetchingAllCharacters) {
+  getAllCharacters: async (offset, itemsPerPage) => {
+    if (useHeroCharacterStore.getState().loading) {
       return;
     }
 
-    set({
-      loading: true,
-      error: false,
-      isFetchingAllCharacters: true,
-    });
+    set({ loading: true, error: false });
 
     try {
-      const response = offset
-        ? await characterService.getCharactersWithOffset(offset)
-        : await characterService.getAllCharacters();
+      const response = await characterService.getAllCharacters(
+        offset,
+        itemsPerPage
+      );
 
-      set((state) => ({
-        characters: offset
-          ? [...state.characters, ...response.data.results]
-          : response.data.results,
+      set(() => ({
+        characters: response.data,
+        loading: false,
       }));
 
       return response;
     } catch (error) {
-      set({ error: true });
-    } finally {
-      set({
-        loading: false,
-        isFetchingAllCharacters: false,
-      });
+      set({ error: true, loading: false });
     }
   },
+
+  setCurrentPage: (page: number) => set({ currentPage: page }),
+  setItemsPerPage: (value: number) => set({ itemsPerPage: value }),
 }));
