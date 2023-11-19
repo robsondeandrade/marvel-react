@@ -84,7 +84,7 @@ export const Characters = () => {
               </div>
             ))
           ) : (
-            <S.H1> Personagem não encontrado </S.H1>
+            <S.H1>{loading ? "" : "Personagem não encontrado"} </S.H1>
           )}
         </S.Ul>
 
