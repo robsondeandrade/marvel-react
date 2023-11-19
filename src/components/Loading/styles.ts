@@ -23,7 +23,7 @@ export const Spinner = styled.div`
   border: 5px solid rgba(255, 255, 255, 0.1);
   border-top: 5px solid #fff;
   border-radius: 50%;
-  width: 180px;
-  height: 180px;
+  width: 120px;
+  height: 120px;
   animation: ${spin} 1.3s linear infinite;
 `;

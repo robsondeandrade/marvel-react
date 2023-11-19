@@ -28,22 +28,17 @@ export const Characters = () => {
   } = useHeroCharacterStore();
 
   const totalPages = calculateTotalPages(characters?.total, characters?.limit);
+  const offset = (currentPage - 1) * itemsPerPage;
 
   useEffect(() => {
     fetchCharacters();
   }, [currentPage, itemsPerPage, searchedName]);
 
   const fetchCharacters = useCallback(async () => {
-    try {
-      const offset = (currentPage - 1) * itemsPerPage;
-
-      await (searchedName
-        ? getCharactersByNameStartsWith(searchedName, offset, itemsPerPage)
-        : getAllCharacters(offset, itemsPerPage));
-    } catch (error) {
-      console.error(error);
-    }
-  }, [currentPage, itemsPerPage, getAllCharacters, searchedName]);
+    await (searchedName
+      ? getCharactersByNameStartsWith(searchedName, offset, itemsPerPage)
+      : getAllCharacters(offset, itemsPerPage));
+  }, [currentPage, itemsPerPage, searchedName]);
 
   const openModal = async (character: IMarvelCharacter) => {
     await getCharactersByName(character.name);
@@ -67,7 +62,7 @@ export const Characters = () => {
     <>
       {loading && <LoadingOverlay />}
       <S.Container>
-        <S.Ul>
+        <S.CharacterList>
           {characters && characters.results?.length >= 1 ? (
             characters.results.map((character) => (
               <div key={character.id}>
@@ -84,9 +79,11 @@ export const Characters = () => {
               </div>
             ))
           ) : (
-            <S.H1>{loading ? "" : "Personagem não encontrado"} </S.H1>
+            <S.ErrorMessage>
+              {loading ? "" : "Personagem não encontrado"}{" "}
+            </S.ErrorMessage>
           )}
-        </S.Ul>
+        </S.CharacterList>
 
         {characters && characters.results?.length && (
           <CustomPagination

@@ -12,7 +12,7 @@ export const Container = styled.div`
   margin-left: -40px;
 `;
 
-export const Ul = styled.ul`
+export const CharacterList = styled.ul`
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
@@ -20,6 +20,6 @@ export const Ul = styled.ul`
   margin-bottom: 2rem;
 `;
 
-export const H1 = styled.h1`
+export const ErrorMessage = styled.h2`
   color: ${({ theme }) => theme.colors.light[200]};
 `;
