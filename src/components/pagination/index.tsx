@@ -17,6 +17,27 @@ export const CustomPagination = ({
   const isPreviousDisabled = currentPage === 1;
   const isNextDisabled = currentPage === totalPages;
 
+  const renderPageButtons = () => {
+    const pageButtons = [];
+
+    const startPage = Math.max(1, currentPage - 2);
+    const endPage = Math.min(totalPages, currentPage + 2);
+
+    for (let page = startPage; page <= endPage; page++) {
+      pageButtons.push(
+        <S.PageButton
+          key={page}
+          active={page === currentPage}
+          onClick={() => handlePageChange(page)}
+        >
+          {page}
+        </S.PageButton>
+      );
+    }
+
+    return pageButtons;
+  };
+
   return (
     <S.Wrapper>
       <S.PageButton
@@ -33,7 +54,7 @@ export const CustomPagination = ({
         <FaAngleLeft />
       </S.PageButton>
 
-      <S.PageButton active>{currentPage}</S.PageButton>
+      {renderPageButtons()}
 
       <S.PageButton
         disabled={isNextDisabled}

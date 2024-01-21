@@ -8,8 +8,18 @@ export default function ModalHero({ isOpen, onClose }: IParamsComponent) {
 
   const character = selectCharacter[0];
 
+  const handleWrapperClick = (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    const targetElement = event.target as Element;
+
+    if (!targetElement.closest(`${S.ModalContent}`)) {
+      onClose();
+    }
+  };
+
   return (
-    <S.ModalWrapper isOpen={isOpen} onClick={() => onClose()}>
+    <S.ModalWrapper isOpen={isOpen} onClick={handleWrapperClick}>
       <S.ModalContent>
         <S.CloseButton onClick={onClose}>
           <FaTimes />

@@ -85,7 +85,7 @@ export const Characters = () => {
           )}
         </S.CharacterList>
 
-        {characters && characters.results?.length && (
+        {characters && currentPage <= totalPages && (
           <CustomPagination
             currentPage={currentPage}
             selected={itemsPerPage}
