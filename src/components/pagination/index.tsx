@@ -74,7 +74,7 @@ export const CustomPagination = ({
         value={selected}
         onChange={(e) => handleSelectPerPage(Number(e.target.value))}
       >
-        {[5, 10, 20].map((option) => (
+        {[10, 20, 30].map((option) => (
           <option key={option} value={option}>
             {option}
           </option>
